@@ -10,32 +10,40 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-val Neon = Color(0xFF00FFC6)
-val NeonDim = Color(0xFF00A884)
-val Magenta = Color(0xFFFF2BD6)
-val Grid = Color(0xFF0B1210)
-val Panel = Color(0xFF101816)
-val Stroke = Color(0xFF1C3D34)
-val Danger = Color(0xFFFF5A5A)
+val TermGreen = Color(0xFF33FF66)
+val TermDim = Color(0xFF1FA344)
+val TermAmber = Color(0xFFE6B800)
+val TermRed = Color(0xFFFF5555)
+val TermBg = Color(0xFF000000)
+val TermPanel = Color(0xFF050805)
+val TermBar = Color(0xFF0A120A)
+
+val Neon = TermGreen
+val NeonDim = TermDim
+val Magenta = TermAmber
+val Grid = TermBg
+val Panel = TermPanel
+val Stroke = TermDim
+val Danger = TermRed
 
 private val Colors = darkColorScheme(
-    primary = Neon,
+    primary = TermGreen,
     onPrimary = Color.Black,
-    secondary = Magenta,
-    background = Color(0xFF050706),
-    surface = Panel,
-    onBackground = Neon,
-    onSurface = Color(0xFFD7FFF4),
-    error = Danger
+    secondary = TermAmber,
+    background = TermBg,
+    surface = TermPanel,
+    onBackground = TermGreen,
+    onSurface = TermGreen,
+    error = TermRed
 )
 
 val CyberTypography = Typography(
-    bodyLarge = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 14.sp, color = Neon),
-    bodyMedium = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 13.sp),
-    bodySmall = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = NeonDim),
-    titleLarge = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Neon),
-    titleMedium = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Neon),
-    labelSmall = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = NeonDim)
+    bodyLarge = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 13.sp, color = TermGreen),
+    bodyMedium = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 12.sp, color = TermGreen),
+    bodySmall = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = TermDim),
+    titleLarge = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TermGreen),
+    titleMedium = TextStyle(fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = TermGreen),
+    labelSmall = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 10.sp, color = TermDim)
 )
 
 @Composable
