@@ -1,26 +1,22 @@
 package com.cyberdeck.android.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BluetoothSearching
-import androidx.compose.material.icons.outlined.Dashboard
-import androidx.compose.material.icons.outlined.Memory
-import androidx.compose.material.icons.outlined.Science
-import androidx.compose.material.icons.outlined.Terminal
-import androidx.compose.material.icons.outlined.Wifi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -31,55 +27,51 @@ import com.cyberdeck.android.ui.screens.NetworkScreen
 import com.cyberdeck.android.ui.screens.SystemScreen
 import com.cyberdeck.android.ui.screens.TerminalScreen
 import com.cyberdeck.android.ui.screens.ToolsScreen
-import com.cyberdeck.android.ui.theme.Grid
-import com.cyberdeck.android.ui.theme.Neon
-import com.cyberdeck.android.ui.theme.NeonDim
-
-private data class Dest(val route: String, val label: String, val icon: ImageVector)
+import com.cyberdeck.android.ui.theme.TermAmber
+import com.cyberdeck.android.ui.theme.TermBar
+import com.cyberdeck.android.ui.theme.TermBg
+import com.cyberdeck.android.ui.theme.TermDim
+import com.cyberdeck.android.ui.theme.TermGreen
 
 private val dests = listOf(
-    Dest("dash", "Deck", Icons.Outlined.Dashboard),
-    Dest("term", "Term", Icons.Outlined.Terminal),
-    Dest("net", "Net", Icons.Outlined.Wifi),
-    Dest("ble", "BLE", Icons.Outlined.BluetoothSearching),
-    Dest("tools", "Tools", Icons.Outlined.Science),
-    Dest("sys", "Sys", Icons.Outlined.Memory)
+    "dash" to "dash",
+    "term" to "tty",
+    "net" to "net",
+    "ble" to "ble",
+    "tools" to "lab",
+    "sys" to "sys"
 )
 
 @Composable
 fun CyberDeckRoot() {
     val nav = rememberNavController()
     val back by nav.currentBackStackEntryAsState()
-    val current = back?.destination?.route
-    Scaffold(
-        containerColor = Grid,
-        bottomBar = {
-            NavigationBar(containerColor = Color(0xFF070B0A), contentColor = Neon) {
-                dests.forEach { d ->
-                    NavigationBarItem(
-                        selected = current == d.route,
-                        onClick = {
-                            nav.navigate(d.route) {
-                                popUpTo(nav.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(d.icon, d.label) },
-                        label = { Text(d.label) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Neon,
-                            selectedTextColor = Neon,
-                            unselectedIconColor = NeonDim,
-                            unselectedTextColor = NeonDim,
-                            indicatorColor = Color(0xFF12352C)
-                        )
-                    )
-                }
+    val current = back?.destination?.route ?: "dash"
+    Column(Modifier.fillMaxSize().background(TermBg)) {
+        Text(
+            "cyberdeck tty1  linux-userland  pts/0",
+            color = TermDim,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 11.sp,
+            modifier = Modifier.background(TermBar).fillMaxWidth().padding(horizontal = 10.dp, vertical = 6.dp)
+        )
+        Row(
+            Modifier.fillMaxWidth().background(Color(0xFF081108)).horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            dests.forEach { (route, label) ->
+                val on = current == route
+                Text(
+                    text = if (on) "[$label]" else " $label ",
+                    color = if (on) TermAmber else TermGreen,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(end = 10.dp).clickable {
+                        nav.navigate(route) { launchSingleTop = true }
+                    }
+                )
             }
         }
-    ) { pad ->
-        NavHost(navController = nav, startDestination = "dash", modifier = Modifier.padding(pad).background(Grid)) {
+        NavHost(navController = nav, startDestination = "dash", modifier = Modifier.weight(1f)) {
             composable("dash") { DashboardScreen() }
             composable("term") { TerminalScreen() }
             composable("net") { NetworkScreen() }
@@ -87,5 +79,12 @@ fun CyberDeckRoot() {
             composable("tools") { ToolsScreen() }
             composable("sys") { SystemScreen() }
         }
+        Text(
+            "deck@android:~$",
+            color = TermDim,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 10.sp,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+        )
     }
 }

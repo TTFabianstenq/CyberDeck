@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,43 +34,61 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cyberdeck.android.data.ProcTools
 import com.cyberdeck.android.data.TerminalEngine
-import com.cyberdeck.android.ui.components.AsciiHeader
-import com.cyberdeck.android.ui.theme.Neon
-import com.cyberdeck.android.ui.theme.NeonDim
+import com.cyberdeck.android.ui.theme.TermAmber
+import com.cyberdeck.android.ui.theme.TermGreen
 import kotlinx.coroutines.launch
 
 @Composable
 fun TerminalScreen() {
     val context = LocalContext.current
     val engine = remember { TerminalEngine(context.applicationContext) }
-    var buffer by remember { mutableStateOf("CyberDeck terminal. Type help.\n") }
+    val host = remember { ProcTools.hostname() }
+    var buffer by remember {
+        mutableStateOf(
+            "Linux cyberdeck  ${android.os.Build.VERSION.RELEASE}  (Android)\n" +
+                "Last login: local console\n" +
+                "Type help. This shell only inspects this device.\n"
+        )
+    }
     var input by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
+    val scroll = rememberScrollState()
     val blink = rememberInfiniteTransition(label = "cur")
-    val alpha by blink.animateFloat(0.15f, 1f, infiniteRepeatable(tween(650, easing = LinearEasing), RepeatMode.Reverse), label = "a")
+    val alpha by blink.animateFloat(
+        0.2f, 1f,
+        infiniteRepeatable(tween(500, easing = LinearEasing), RepeatMode.Reverse),
+        label = "a"
+    )
+    LaunchedEffect(buffer) { scroll.animateScrollTo(scroll.maxValue) }
+
     fun run() {
-        val cmd = input; input = ""; buffer += "\n> $cmd\n"
+        val cmd = input
+        input = ""
+        buffer += "\ndeck@$host:~$ $cmd\n"
         scope.launch {
             val out = engine.execute(cmd)
             buffer = if (out == "__CLEAR__") "buffer cleared.\n" else buffer + out + "\n"
         }
     }
-    Column(Modifier.fillMaxSize().background(Color(0xFF030605)).padding(12.dp)) {
-        AsciiHeader("TTY / ROOT@CYBERDECK")
-        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).fillMaxWidth()) {
-            Text(buffer, color = Neon, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+
+    Column(Modifier.fillMaxSize().background(Color.Black).padding(10.dp)) {
+        Column(Modifier.weight(1f).verticalScroll(scroll).fillMaxWidth()) {
+            Text(buffer, color = TermGreen, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
         }
-        Row(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Text("> ", color = Neon, fontFamily = FontFamily.Monospace)
+        Row(Modifier.fillMaxWidth().padding(top = 6.dp)) {
+            Text("deck@$host:~$ ", color = TermAmber, fontFamily = FontFamily.Monospace, fontSize = 13.sp)
             BasicTextField(
-                value = input, onValueChange = { input = it }, modifier = Modifier.weight(1f),
-                textStyle = TextStyle(color = Neon, fontFamily = FontFamily.Monospace, fontSize = 14.sp),
-                cursorBrush = SolidColor(Neon.copy(alpha = alpha)), singleLine = true,
+                value = input,
+                onValueChange = { input = it },
+                modifier = Modifier.weight(1f),
+                textStyle = TextStyle(color = TermGreen, fontFamily = FontFamily.Monospace, fontSize = 13.sp),
+                cursorBrush = SolidColor(TermGreen.copy(alpha = alpha)),
+                singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { run() })
             )
         }
-        Text("enter to execute", color = NeonDim, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
     }
 }
