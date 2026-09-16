@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.CyberDeck" parent="android:Theme.Material.NoActionBar">
+        <item name="android:statusBarColor">#050706</item>
+        <item name="android:navigationBarColor">#050706</item>
+        <item name="android:windowBackground">#050706</item>
+    </style>
+</resources>
